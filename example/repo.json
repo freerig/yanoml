@@ -1,0 +1,110 @@
+{
+  "fabric": {
+    "loaders": {
+      "0.17.2": {
+        "main": {
+          "url": "https://maven.fabricmc.net/net/fabricmc/fabric-loader/0.17.2/fabric-loader-0.17.2.jar",
+          "sha256": "ho3X0jZvC2twA5Xv4eZgbCG7IUfHUHHGq+Fu2fIaom8="
+        },
+        "libraries": {
+          "client": [],
+          "common": [
+            {
+              "url": "https://maven.fabricmc.net//org/ow2/asm/asm/9.8/asm-9.8.jar",
+              "sha256": "h26raoPa7K1cpn65/KuwY8l7WuuM8fynqYns3hdSIFE="
+            },
+            {
+              "url": "https://maven.fabricmc.net//org/ow2/asm/asm-analysis/9.8/asm-analysis-9.8.jar",
+              "sha256": "5kBzL7zTxicZJaUE8SXjg4Roj037v5LIYi387g0J7bk="
+            },
+            {
+              "url": "https://maven.fabricmc.net//org/ow2/asm/asm-commons/9.8/asm-commons-9.8.jar",
+              "sha256": "MwGhwctMWfzFKSZI2sHXxa7UwPBn376IhzuM3+d0BPQ="
+            },
+            {
+              "url": "https://maven.fabricmc.net//org/ow2/asm/asm-tree/9.8/asm-tree-9.8.jar",
+              "sha256": "FLeIDLfIXu0QHicQQy/D/7gydVMqaolNxMQJXUmtWfE="
+            },
+            {
+              "url": "https://maven.fabricmc.net//org/ow2/asm/asm-util/9.8/asm-util-9.8.jar",
+              "sha256": "i6BGDsso/Q4pgOXz7zQzpROkV7wHf4GlO9x1tYegjRU="
+            },
+            {
+              "url": "https://maven.fabricmc.net//net/fabricmc/sponge-mixin/0.16.3+mixin.0.8.7/sponge-mixin-0.16.3+mixin.0.8.7.jar",
+              "sha256": "vROzcplu1sLqdqMbSWt3lWKyzSDLH4GX6fqR1qX0ZJw="
+            }
+          ],
+          "server": [],
+          "development": [
+            {
+              "url": "https://maven.fabricmc.net//io/github/llamalad7/mixinextras-fabric/0.5.0/mixinextras-fabric-0.5.0.jar",
+              "sha256": "Xz8TE/izaDw3CmPER8NyLFvDXpvRatMuhgrZx4amB0k="
+            }
+          ]
+        },
+        "mainClass": {
+          "client": "net.fabricmc.loader.impl.launch.knot.KnotClient",
+          "server": "net.fabricmc.loader.impl.launch.knot.KnotServer"
+        }
+      }
+    },
+    "adapters": {
+      "1.21.1": {
+        "intermediary": {
+          "url": "https://maven.fabricmc.net/net/fabricmc/intermediary/1.21.1/intermediary-1.21.1.jar",
+          "sha256": "YFkVfftKU27BUWlwBPdPYAS300ayicL4mEng5YWqNvo="
+        }
+      }
+    }
+  },
+  "vanilla": {
+    "1.21.1": {
+      "url": "https://piston-meta.mojang.com/v1/packages/0802493292eb060c2899a710c262a352068d4e36/1.21.1.json",
+      "sha256": "N2YqM6qj5kfm3+W/URr92PiaP5SJY23ZC0720NRFm7E="
+    }
+  },
+  "mods": {
+    "fabric-api": {
+      "0.116.6+1.21.1": {
+        "type": "raw",
+        "version_type": "release",
+        "minecraft_versions": [
+          "1.21.1"
+        ],
+        "loaders": [
+          "fabric"
+        ],
+        "files": {
+          "jars": [
+            {
+              "name": "fabric-api-0.116.6+1.21.1.jar",
+              "url": "https://cdn.modrinth.com/data/P7dR8mSH/versions/9xIK4e8l/fabric-api-0.116.6%2B1.21.1.jar",
+              "hash": "sha512-8Oyx4cjxRxQ3yD9PWOVJ7+zA7T8nW6oqZLu5om/YwUNlQxv5LPaNj4BV9u8QP8yGPNda276L6A97dS/hwMOjBQ=="
+            }
+          ]
+        }
+      }
+    },
+    "immersiveportals": {
+      "v6.0.6-mc1.21.1": {
+        "type": "raw",
+        "version_type": "release",
+        "minecraft_versions": [
+          "1.21.1"
+        ],
+        "loaders": [
+          "fabric"
+        ],
+        "files": {
+          "jars": [
+            {
+              "name": "immersive-portals-6.0.6-mc1.21.1-fabric.jar",
+              "url": "https://cdn.modrinth.com/data/zJpHMkdD/versions/vOmUATGw/immersive-portals-6.0.6-mc1.21.1-fabric.jar",
+              "hash": "sha512-TkxieJdG40qotm7KLuC3/zRTP2TvgpiNGEWHf+Nm7+9qyVaIT8lUPCCwKPGoBaed9AbSfrGWj1DF8g0CoZ+bow=="
+            }
+          ]
+        }
+      }
+    }
+  }
+}
