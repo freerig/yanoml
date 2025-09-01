@@ -19,7 +19,7 @@
             repo = (import ./repo inputs repoFile);
             minecraftRawMeta = repo.vanilla.${minecraftVersion};
             minecraftParsedMeta =
-              (import ./vanilla/parse.nix inputs { inherit minecraftRawMeta; });
+              (import ./vanilla inputs { inherit minecraftRawMeta; });
 
             parsedMeta = if modLoader == "vanilla" then
               minecraftParsedMeta.client
@@ -40,7 +40,7 @@
             versionInfos = { inherit (minecraftRawMeta) id type; };
           });
         packages = {
-          examples = import ./example inputs { inherit self system; };
+          examples = import ./examples inputs { inherit self system; };
         };
         apps = let
           mkNuApp = name: file: {
@@ -59,6 +59,10 @@
                 "${repo}/fabric/add-minecraft.nu";
               add-loader =
                 mkNuApp "add-minecraft-fabric" "${repo}/fabric/add-loader.nu";
+            };
+            mods = {
+              add-mod =
+                mkNuApp "add-minecraft-fabric" "${repo}/mods/add-mod.nu";
             };
           };
         };

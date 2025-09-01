@@ -69,7 +69,7 @@ def main [
         echo ($versions | first)
       } else {
         print -e $versions
-        error make --unspanned {msg: "Too many versions found!"}
+        error make --unspanned {msg: "Too many versions found! (use -L to select the latest)"}
       }
     }
   }
