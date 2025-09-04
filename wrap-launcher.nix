@@ -27,61 +27,66 @@ in (myLib.writeNushellScript "mc.nu" {
   ''
     let inputs = $env.INPUT | from json
 
-    let tmp = mktemp -d
+    # Start Minecraft
+    def main [
+      --player-name: string = "NixUser" # The Minecraft username
+      --player-uuid: string # The Minecraft player UUID. It is used to uniquely identify players (to save inventory...).
 
-    cp -r ${
-      pkgs.symlinkJoin {
-        name = "natives";
-        paths = builtins.concatMap
-          (lib: if lib ? "natives" then [ lib.natives ] else [ ])
-          parsedMeta.libraries;
-      }
-    } $tmp
+      --game-dir: string = "~/.minecraft" # The Minecraft storage directory. It's used to save worlds, config...
+    ] {
+      let tmp = mktemp -d
 
-    let replacements = {
-      classpath: ($inputs.libraries | each {|lib| $lib.jar} | str join ":")
-      classpath_separator: ":"
-      # natives_directory: (mktemp -d) # In newer versions, we don't need to copy natives into the natives dir
-      natives_directory: $tmp
-      assets_root: ${
-        let assets = parsedMeta.assets;
-        in myLib.joinIntoDirectoryAttr "minecraft-assets-${assets.id}" {
-          "objects" =
-            myLib.joinIntoDirectoryAttr "minecraft-asset-objects-${assets.id}"
-            assets.files;
-          "indexes/${assets.id}.json" =
-            pkgs.writeText "minecraft-assets-index-${assets.id}.json"
-            (builtins.toJSON assets.index);
+      cp -r ${
+        pkgs.symlinkJoin {
+          name = "natives";
+          paths = builtins.concatMap
+            (lib: if lib ? "natives" then [ lib.natives ] else [ ])
+            parsedMeta.libraries;
         }
+      } $tmp
+
+      let replacements = {
+        classpath: ($inputs.libraries | each {|lib| $lib.jar} | str join ":")
+        classpath_separator: ":"
+        natives_directory: $tmp
+        assets_root: ${
+          let assets = parsedMeta.assets;
+          in myLib.joinIntoDirectoryAttr "minecraft-assets-${assets.id}" {
+            "objects" =
+              myLib.joinIntoDirectoryAttr "minecraft-asset-objects-${assets.id}"
+              assets.files;
+            "indexes/${assets.id}.json" =
+              pkgs.writeText "minecraft-assets-index-${assets.id}.json"
+              (builtins.toJSON assets.index);
+          }
+        }
+        assets_index_name: "${parsedMeta.assets.id}"
+
+        auth_player_name: $player_name
+        auth_uuid: ($player_uuid | default (${pkgs.util-linux}/bin/uuidgen))
+        auth_access_token: "" # Not implemented
+        clientid: "" # Not implemented
+        user_type: mojang
+
+        game_directory: ($game_dir | path expand)
+
+        version_name: $inputs.version.id
+        version_type: $inputs.version.type
+
+        launcher_name: yanoml
+        launcher_version: "42"
       }
-      assets_index_name: "${parsedMeta.assets.id}"
-      _assets_root: ""
-      _assets_index_name: ""
 
-      auth_player_name: hehe
-      auth_uuid: (${pkgs.util-linux}/bin/uuidgen)
-      auth_access_token: "" # Not implemented
-      clientid: "" # Not implemented
-      user_type: mojang
+      let replace = {|arg| $replacements | transpose name value | reduce --fold $arg {|it, acc| $acc | str replace $"''${($it.name)}" $it.value}}
 
-      game_directory: ("~/.minecraft" | path expand)
+      let arguments = $inputs.arguments | items {|argType, args| [$argType ($args.raw | do $replace $in)]} | into record
 
-      version_name: $inputs.version.id
-      version_type: $inputs.version.type
+      $env.LD_LIBRARY_PATH = $inputs.ldLibPath
 
-      launcher_name: nixcraft
-      launcher_version: "42"
+      ${
+        lib.getExe pkgs.openjdk
+      } ...$arguments.jvm $inputs.mainClass ...$arguments.game 
     }
-
-    let replace = {|arg| $replacements | transpose name value | reduce --fold $arg {|it, acc| $acc | str replace $"''${($it.name)}" $it.value}}
-
-    let arguments = $inputs.arguments | items {|argType, args| [$argType ($args.raw | do $replace $in)]} | into record
-
-    $env.LD_LIBRARY_PATH = $inputs.ldLibPath
-
-    ${
-      lib.getExe pkgs.openjdk
-    } ...$arguments.jvm $inputs.mainClass ...$arguments.game 
   '')
 # see https://ryanccn.dev/posts/inside-a-minecraft-launcher/
 

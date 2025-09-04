@@ -6,7 +6,7 @@ rec {
     pkgs.writeShellScript name ''
       ${pkgs.coreutils}/bin/env ${
         lib.strings.escapeShellArg "INPUT=${builtins.toJSON data}"
-      } ${lib.getExe pkgs.nushell} ${pkgs.writeText "${name}.nu" script}
+      } ${lib.getExe pkgs.nushell} ${pkgs.writeText "${name}.nu" script} "$@"
     '';
 
   joinIntoDirectory = name: derivations:

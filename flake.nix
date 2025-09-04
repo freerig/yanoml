@@ -35,10 +35,14 @@
             else
               throw
               "Mod loader ${modLoader} is not implemented yet (make an issue if you want)";
-          in pkgs.writeShellScriptBin "mc" (import ./wrap-launcher.nix inputs {
-            inherit parsedMeta;
-            versionInfos = { inherit (minecraftRawMeta) id type; };
-          });
+          in pkgs.writeShellScriptBin "mc" ''
+            ${
+              (import ./wrap-launcher.nix inputs {
+                inherit parsedMeta;
+                versionInfos = { inherit (minecraftRawMeta) id type; };
+              })
+            } "$@"'';
+
         packages = {
           examples = import ./examples inputs { inherit self system; };
         };

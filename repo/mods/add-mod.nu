@@ -20,7 +20,7 @@ def add-version [
   edit_repo {|data| $data | upsert ([mods $mod_name $modrinth_data.version_number] | into cell-path) $to_add}
 }
 
-# Add a mod to the repo
+# Add a mod to the repo (only Modrinth for now)
 def main [
   project_id: string # The Modrinth mod id that can be found by clicking the three points button at the top left of the mod page and then selecting "Copy ID" (or similar)
   --mod-name: string # The mod name, can overwrite the mod name provided by modrinth (use the name in the url)

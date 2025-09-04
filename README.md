@@ -27,7 +27,7 @@ It is really good, but if you really want a proof, you can follow the following 
    ```
    (don't forget to replace 1.21.1 with the version of your choice).
    You should get a `repo.json` file in the working directory.
-   Find more infos in the ["""doc"""](#documentation).
+   Find more infos in [the documentation](#change-runtime-props-).
 
 2. Once you have your repo, you can write a flake like that:
    ```nix
@@ -35,30 +35,36 @@ It is really good, but if you really want a proof, you can follow the following 
      description = "My Minecraft Client";
      inputs.yanoml.url = "github:freerig/yanoml";
      outputs = { self, yanoml }:
-       let
-         system = "x86_64-linux";
+       let system = "x86_64-linux";
        in {
-         packages.${system}.my-great-minecraft-client =
-           yanoml.mkMinecraftClient.${system} { minecraftVersion = "1.21.1"; repoFile = ./repo.json; };
-
-         packages.${system}.default = self.packages.${system}.my-great-minecraft-client;
+         packages.${system} = rec {
+           my-great-minecraft-client = yanoml.mkMinecraftClient.${system} {
+             minecraftVersion = "1.21.1";
+             repoFile = ./repo.json;
+           };
+           default = my-great-minecraft-client;
+         };
        };
    }
    ```
 
 ## Documentation
 
+### Change runtime props (username, gamedir...)
+
+Just type `nix run github:freerig/yanoml#examples.basic -- --help` to see more options!
+
 ### Create/manage a `repo.json`
 
 These commands will be applied to `$PWD/repo.json` (this file will be created if it doesn't exist already). Don't forget to change the command parameters to reflect your needs. **All these commands have a `--help` menu.**
 - Add a vanilla Minecraft version: `nix run github:freerig/yanoml#repo.vanilla.add-minecraft -- 1.21.1`
-- Add Fabric (forge isn't supported right now):
+- Add Fabric (Forge isn't supported right now):
   ```shell
   nix run github:freerig/yanoml#repo.vanilla.add-minecraft -- 1.21.1 # Fabric needs vanilla to work!
   nix run github:freerig/yanoml#repo.fabric.add-minecraft -- 1.21.1 # Fabric needs an intermediary lib for each Minecraft version it will run on.
   nix run github:freerig/yanoml#repo.fabric.add-loader -- 0.17.2 # This is to install the Fabric loader (kinda the core of Fabric).
   ```
-- Add a mod (from Modrinth only currently):
+- Add a mod (only Modrinth is currently supported):
   `nix run github:freerig/yanoml#repo.mods.add-mod -- nvQzSEkH -v 1.21.1 -l fabric -L`
   This adds the latest version of the [Jade](https://modrinth.com/mod/jade) mod that is compatible with Fabric running Minecraft `1.21.1`. You can find the mod id (in this case `nvQzSEkH`) by clicking the three points button at the top left of the Modrinth mod page and then selecting "Copy ID".
 
@@ -88,7 +94,7 @@ Yes, but it only supports Fabric for now (Quilt, Forge and others will come one 
 
 [yes.](https://helix-editor.com/#:~:text=Is%20it%20any%20good?-,Yes.) (link to a link brrr)
 
-### How do I change my username, game dir, how do I log in?
+### How do I log in?
 
 Not yet ready...
 
