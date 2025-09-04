@@ -185,6 +185,29 @@
           ]
         }
       }
+    },
+    "sodium": {
+      "mc1.21.1-0.6.0-fabric": {
+        "type": "raw",
+        "version_type": "release",
+        "minecraft_versions": [
+          "1.21",
+          "1.21.1"
+        ],
+        "loaders": [
+          "fabric",
+          "quilt"
+        ],
+        "files": {
+          "jars": [
+            {
+              "name": "sodium-fabric-0.6.0+mc1.21.1.jar",
+              "url": "https://cdn.modrinth.com/data/AANobbMI/versions/b70slbHV/sodium-fabric-0.6.0%2Bmc1.21.1.jar",
+              "hash": "sha512-97kpibpjEjUmI9AxHFu3HrjaFOouWgcPOpWaHxDP5oz8hIfPjb3pGH2EnWwEgz3yqXS+EpSe+uiq/+hzgVunpQ=="
+            }
+          ]
+        }
+      }
     }
   }
 }

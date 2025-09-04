@@ -83,6 +83,8 @@ in (myLib.writeNushellScript "mc.nu" {
 
       $env.LD_LIBRARY_PATH = $inputs.ldLibPath
 
+      cd (mktemp -d)
+
       ${
         lib.getExe pkgs.openjdk
       } ...$arguments.jvm $inputs.mainClass ...$arguments.game 

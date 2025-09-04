@@ -2,7 +2,7 @@ inputs:
 { minecraftRawMeta }:
 
 let
-  inherit (inputs) pkgs;
+  inherit (inputs) pkgs lib;
   myLib = import ../lib.nix inputs;
 
   fetchSha1 = meta: pkgs.fetchurl { inherit (meta) url sha1; };
@@ -109,76 +109,21 @@ in {
         }) (builtins.attrValues objects));
     };
   };
-  # server to be added
+  server = let
+    extracted = pkgs.runCommand "minecraft-java-natives" { } ''
+      mkdir -p $out
+      cd $out
+      ${pkgs.jdk}/bin/jar xf ${fetchSha1 minecraftRawMeta.downloads.server}
+    '';
+  in {
+    arguments = {
+      jvm.raw = [ "-cp" "\${classpath}" ];
+      game.raw = [ ];
+    };
+    libraries = let
+      rawPaths = lib.splitString ";"
+        (builtins.readFile "${extracted}/META-INF/classpath-joined");
+    in map (rawPath: { jar = "${extracted}/META-INF/${rawPath}"; }) rawPaths;
+    mainClass = builtins.readFile "${extracted}/META-INF/main-class";
+  };
 }
-
-# FIXME: Older versions need it!
-# natives_directory = builtins.toString
-#   (pkgs.runCommand "minecraft-java-natives" { } ''
-#     mkdir -p $out
-#     cd $TMPDIR
-
-#     ${builtins.concatStringsSep "\n" (map (library:
-#       "${pkgs.jdk}/bin/jar xf ${
-#         fetchSha1 library.downloads.classifiers.${
-#           library.natives.${currentOs.name}
-#         }
-#       }") (builtins.filter (library: library ? "natives")
-#         rawLibraries))}
-
-#     shopt -s nullglob
-#     for f in ./*.{dylib,so,dll}; do
-#       mv "$f" "$out/"
-#     done
-#   '');
-
-# arguments = let
-#   processRawArgument = argument:
-#     if builtins.isString argument then
-#       [ argument ]
-#     else if (evalRules argument.rules) then
-#       if builtins.isString argument.value then
-#         [ argument.value ]
-#       else
-#         argument.value
-#     else
-#       [ ];
-
-#   giveVariables = args:
-#     let
-#       joinIntoDirectory = name: derivations:
-#         pkgs.runCommand name { } ''
-#           mkdir -p $out
-#           ${builtins.concatStringsSep "\n"
-#           (map (d: "ln -s ${d} $out/${d.name}") derivations)}
-#         '';
-#       replacements = {
-#         # JVM
-#         launcher_name = "nixcraft";
-#         launcher_version = "31";
-
-#         classpath = builtins.concatStringsSep ":" libraries;
-#         classpath_separator = ":";
-#         library_directory = builtins.toString
-#           (joinIntoDirectory "minecraft-java-libraries" libraries);
-
-#         natives_directory = ".minecraft/versions/${minecraftRawMeta.id}";
-#         primary_jar = builtins.toString mainJar;
-#         game_directory = ".minecraft";
-
-#         # Game
-#         auth_player_name = "hehe";
-#         version_name = minecraftRawMeta.id;
-#         version_type = minecraftRawMeta.type;
-#         assets_root = "";
-#         assets_index_name = "";
-#         auth_uuid = "bdb481f7-6f12-4213-af6c-5d96d3b84556";
-#         user_type = "mojang";
-#       };
-#     in map (builtins.replaceStrings
-#       (map (var: "\${${var}}") (builtins.attrNames replacements))
-#       (builtins.attrValues replacements)) args;
-
-#   processRawArgumentList = argumentListType: rawArgumentList:
-#     giveVariables (builtins.concatMap processRawArgument rawArgumentList);
-# in builtins.mapAttrs processRawArgumentList minecraftRawMeta.arguments;

@@ -13,35 +13,47 @@
         pkgs = import nixpkgs { inherit system; };
         inputs = { inherit lib pkgs; };
       in {
-        mkMinecraftClient = { minecraftVersion, repoFile, modLoader ? "vanilla"
-          , modLoaderVersion ? null, modPredicate ? (x: [ ]) }:
-          let
-            repo = (import ./repo inputs repoFile);
-            minecraftRawMeta = repo.vanilla.${minecraftVersion};
-            minecraftParsedMeta =
-              (import ./vanilla inputs { inherit minecraftRawMeta; });
+        mkMinecraft = let
+          mkRole = role:
+            { minecraftVersion, repoFile, modLoader ? "vanilla"
+            , modLoaderVersion ? null, modPredicate ? (x: [ ]) }:
+            let
+              repo = (import ./repo inputs repoFile);
+              minecraftRawMeta = repo.vanilla.${minecraftVersion};
+              minecraftParsedMeta =
+                (import ./vanilla inputs { inherit minecraftRawMeta; });
 
-            parsedMeta = if modLoader == "vanilla" then
-              minecraftParsedMeta.client
-            else if modLoader == "fabric" then
-              (import ./fabric inputs {
-                inherit minecraftParsedMeta;
-                fabricMeta = {
-                  loader = repo.fabric.loaders.${modLoaderVersion};
-                  adapter = repo.fabric.adapters.${minecraftVersion};
-                };
-                mods = modPredicate repo.mods;
-              }).client
-            else
-              throw
-              "Mod loader ${modLoader} is not implemented yet (make an issue if you want)";
-          in pkgs.writeShellScriptBin "mc" ''
-            ${
-              (import ./wrap-launcher.nix inputs {
-                inherit parsedMeta;
-                versionInfos = { inherit (minecraftRawMeta) id type; };
-              })
-            } "$@"'';
+              parsedMeta = if modLoader == "vanilla" then
+                minecraftParsedMeta.${role}
+              else if modLoader == "fabric" then
+                (import ./fabric inputs {
+                  inherit minecraftParsedMeta;
+                  fabricMeta = {
+                    loader = repo.fabric.loaders.${modLoaderVersion};
+                    adapter = repo.fabric.adapters.${minecraftVersion};
+                  };
+                  mods = modPredicate repo.mods;
+                }).${role}
+              else
+                throw
+                "Mod loader ${modLoader} is not implemented yet (make an issue if you want)";
+            in pkgs.writeShellScriptBin "mc" ''
+              ${
+                if role == "client" then
+                  import ./wrap-client.nix inputs {
+                    inherit parsedMeta;
+                    versionInfos = { inherit (minecraftRawMeta) id type; };
+                  }
+                else if role == "server" then
+                  import ./wrap-server.nix inputs { inherit parsedMeta; }
+                else
+                  throw ''
+                    Minecraft role ${role} doesn't exist (you must choose "client" or "server")''
+              } "$@"'';
+        in params: {
+          client = mkRole "client" params;
+          server = mkRole "server" params;
+        };
 
         packages = {
           examples = import ./examples inputs { inherit self system; };
