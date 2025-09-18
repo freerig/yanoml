@@ -9,6 +9,19 @@ rec {
       } ${lib.getExe pkgs.nushell} ${pkgs.writeText "${name}.nu" script} "$@"
     '';
 
+  writeSimpleNushellScriptBin = name: script:
+    pkgs.writeTextFile {
+      inherit name;
+      executable = true;
+      destination = "/bin/${name}";
+      text = ''
+        #!${lib.getExe pkgs.nushell}
+
+        ${script}
+      '';
+      meta.mainProgram = name;
+    };
+
   joinIntoDirectory = name: derivations:
     pkgs.runCommand name { } ''
       mkdir -p $out

@@ -1,4 +1,163 @@
 {
+  "mods": {
+    "fabric-api": {
+      "0.116.6+1.21.1": {
+        "type": "raw",
+        "version_type": "release",
+        "compatibility": {
+          "minecraft_versions": [
+            "1.21.1"
+          ],
+          "loaders": [
+            "fabric"
+          ]
+        },
+        "content": {
+          "jars": [
+            {
+              "name": "fabric-api-0.116.6+1.21.1.jar",
+              "url": "https://cdn.modrinth.com/data/P7dR8mSH/versions/9xIK4e8l/fabric-api-0.116.6%2B1.21.1.jar",
+              "hash": "sha512-8Oyx4cjxRxQ3yD9PWOVJ7+zA7T8nW6oqZLu5om/YwUNlQxv5LPaNj4BV9u8QP8yGPNda276L6A97dS/hwMOjBQ=="
+            }
+          ]
+        }
+      }
+    },
+    "jade": {
+      "15.10.2+fabric": {
+        "type": "raw",
+        "version_type": "release",
+        "compatibility": {
+          "minecraft_versions": [
+            "1.21.1"
+          ],
+          "loaders": [
+            "fabric",
+            "quilt"
+          ]
+        },
+        "content": {
+          "jars": [
+            {
+              "name": "Jade-1.21.1-Fabric-15.10.2.jar",
+              "url": "https://cdn.modrinth.com/data/nvQzSEkH/versions/PtcHhnOY/Jade-1.21.1-Fabric-15.10.2.jar",
+              "hash": "sha512-QdoRO0jYxfg0oMNgCOZa4T74w2VjEwu0fiskzv2oofQHQ097Mrg1+IkZndmnP2YQVAFWHtkBXJl+aSOdkcCfmg=="
+            }
+          ]
+        }
+      }
+    },
+    "pehkui": {
+      "3.8.3+1.14.4-1.21": {
+        "type": "raw",
+        "version_type": "release",
+        "compatibility": {
+          "minecraft_versions": [
+            "1.14.4",
+            "1.15.2",
+            "1.16.5",
+            "1.17.1",
+            "1.18.2",
+            "1.19.2",
+            "1.19.4",
+            "1.20.1",
+            "1.20.2",
+            "1.20.4",
+            "1.20.6",
+            "1.21-rc1",
+            "1.21",
+            "1.21.1"
+          ],
+          "loaders": [
+            "fabric",
+            "quilt"
+          ]
+        },
+        "content": {
+          "jars": [
+            {
+              "name": "Pehkui-3.8.3+1.14.4-1.21.jar",
+              "url": "https://cdn.modrinth.com/data/t5W7Jfwy/versions/6fzxx6SC/Pehkui-3.8.3%2B1.14.4-1.21.jar",
+              "hash": "sha512-Xrch1+DmiJhXqB80BFHJqY+NzdymfdkZ+eaWkcrfRLXwAePHHbafa5jV2HCdtzmte5Hccb01iAoOYkG3I4IvHw=="
+            }
+          ]
+        }
+      }
+    },
+    "modmenu": {
+      "11.0.3": {
+        "type": "raw",
+        "version_type": "release",
+        "compatibility": {
+          "minecraft_versions": [
+            "1.21",
+            "1.21.1"
+          ],
+          "loaders": [
+            "fabric",
+            "quilt"
+          ]
+        },
+        "content": {
+          "jars": [
+            {
+              "name": "modmenu-11.0.3.jar",
+              "url": "https://cdn.modrinth.com/data/mOgUt4GM/versions/YIfqIJ8q/modmenu-11.0.3.jar",
+              "hash": "sha512-TGOHoFnHrJAorMPXgSSvAqRJW+8sFng7v/5b9EkGfa8mIHCP1X+HJeRvDDTQ9XGt9g8IaXQr/n9hAd3xOiqH2g=="
+            }
+          ]
+        }
+      }
+    },
+    "sodium": {
+      "mc1.21.1-0.6.0-fabric": {
+        "type": "raw",
+        "version_type": "release",
+        "compatibility": {
+          "minecraft_versions": [
+            "1.21",
+            "1.21.1"
+          ],
+          "loaders": [
+            "fabric",
+            "quilt"
+          ]
+        },
+        "content": {
+          "jars": [
+            {
+              "name": "sodium-fabric-0.6.0+mc1.21.1.jar",
+              "url": "https://cdn.modrinth.com/data/AANobbMI/versions/b70slbHV/sodium-fabric-0.6.0%2Bmc1.21.1.jar",
+              "hash": "sha512-97kpibpjEjUmI9AxHFu3HrjaFOouWgcPOpWaHxDP5oz8hIfPjb3pGH2EnWwEgz3yqXS+EpSe+uiq/+hzgVunpQ=="
+            }
+          ]
+        }
+      }
+    },
+    "immersiveportals": {
+      "v6.0.6-mc1.21.1": {
+        "type": "raw",
+        "version_type": "release",
+        "compatibility": {
+          "minecraft_versions": [
+            "1.21.1"
+          ],
+          "loaders": [
+            "fabric"
+          ]
+        },
+        "content": {
+          "jars": [
+            {
+              "name": "immersive-portals-6.0.6-mc1.21.1-fabric.jar",
+              "url": "https://cdn.modrinth.com/data/zJpHMkdD/versions/vOmUATGw/immersive-portals-6.0.6-mc1.21.1-fabric.jar",
+              "hash": "sha512-TkxieJdG40qotm7KLuC3/zRTP2TvgpiNGEWHf+Nm7+9qyVaIT8lUPCCwKPGoBaed9AbSfrGWj1DF8g0CoZ+bow=="
+            }
+          ]
+        }
+      }
+    }
+  },
   "fabric": {
     "loaders": {
       "0.17.2": {
@@ -59,155 +218,8 @@
   },
   "vanilla": {
     "1.21.1": {
-      "url": "https://piston-meta.mojang.com/v1/packages/0802493292eb060c2899a710c262a352068d4e36/1.21.1.json",
-      "sha256": "N2YqM6qj5kfm3+W/URr92PiaP5SJY23ZC0720NRFm7E="
-    }
-  },
-  "mods": {
-    "fabric-api": {
-      "0.116.6+1.21.1": {
-        "type": "raw",
-        "version_type": "release",
-        "minecraft_versions": [
-          "1.21.1"
-        ],
-        "loaders": [
-          "fabric"
-        ],
-        "files": {
-          "jars": [
-            {
-              "name": "fabric-api-0.116.6+1.21.1.jar",
-              "url": "https://cdn.modrinth.com/data/P7dR8mSH/versions/9xIK4e8l/fabric-api-0.116.6%2B1.21.1.jar",
-              "hash": "sha512-8Oyx4cjxRxQ3yD9PWOVJ7+zA7T8nW6oqZLu5om/YwUNlQxv5LPaNj4BV9u8QP8yGPNda276L6A97dS/hwMOjBQ=="
-            }
-          ]
-        }
-      }
-    },
-    "immersiveportals": {
-      "v6.0.6-mc1.21.1": {
-        "type": "raw",
-        "version_type": "release",
-        "minecraft_versions": [
-          "1.21.1"
-        ],
-        "loaders": [
-          "fabric"
-        ],
-        "files": {
-          "jars": [
-            {
-              "name": "immersive-portals-6.0.6-mc1.21.1-fabric.jar",
-              "url": "https://cdn.modrinth.com/data/zJpHMkdD/versions/vOmUATGw/immersive-portals-6.0.6-mc1.21.1-fabric.jar",
-              "hash": "sha512-TkxieJdG40qotm7KLuC3/zRTP2TvgpiNGEWHf+Nm7+9qyVaIT8lUPCCwKPGoBaed9AbSfrGWj1DF8g0CoZ+bow=="
-            }
-          ]
-        }
-      }
-    },
-    "modmenu": {
-      "11.0.3": {
-        "type": "raw",
-        "version_type": "release",
-        "minecraft_versions": [
-          "1.21",
-          "1.21.1"
-        ],
-        "loaders": [
-          "fabric",
-          "quilt"
-        ],
-        "files": {
-          "jars": [
-            {
-              "name": "modmenu-11.0.3.jar",
-              "url": "https://cdn.modrinth.com/data/mOgUt4GM/versions/YIfqIJ8q/modmenu-11.0.3.jar",
-              "hash": "sha512-TGOHoFnHrJAorMPXgSSvAqRJW+8sFng7v/5b9EkGfa8mIHCP1X+HJeRvDDTQ9XGt9g8IaXQr/n9hAd3xOiqH2g=="
-            }
-          ]
-        }
-      }
-    },
-    "jade": {
-      "15.10.2+fabric": {
-        "type": "raw",
-        "version_type": "release",
-        "minecraft_versions": [
-          "1.21.1"
-        ],
-        "loaders": [
-          "fabric",
-          "quilt"
-        ],
-        "files": {
-          "jars": [
-            {
-              "name": "Jade-1.21.1-Fabric-15.10.2.jar",
-              "url": "https://cdn.modrinth.com/data/nvQzSEkH/versions/PtcHhnOY/Jade-1.21.1-Fabric-15.10.2.jar",
-              "hash": "sha512-QdoRO0jYxfg0oMNgCOZa4T74w2VjEwu0fiskzv2oofQHQ097Mrg1+IkZndmnP2YQVAFWHtkBXJl+aSOdkcCfmg=="
-            }
-          ]
-        }
-      }
-    },
-    "pehkui": {
-      "3.8.3+1.14.4-1.21": {
-        "type": "raw",
-        "version_type": "release",
-        "minecraft_versions": [
-          "1.14.4",
-          "1.15.2",
-          "1.16.5",
-          "1.17.1",
-          "1.18.2",
-          "1.19.2",
-          "1.19.4",
-          "1.20.1",
-          "1.20.2",
-          "1.20.4",
-          "1.20.6",
-          "1.21-rc1",
-          "1.21",
-          "1.21.1"
-        ],
-        "loaders": [
-          "fabric",
-          "quilt"
-        ],
-        "files": {
-          "jars": [
-            {
-              "name": "Pehkui-3.8.3+1.14.4-1.21.jar",
-              "url": "https://cdn.modrinth.com/data/t5W7Jfwy/versions/6fzxx6SC/Pehkui-3.8.3%2B1.14.4-1.21.jar",
-              "hash": "sha512-Xrch1+DmiJhXqB80BFHJqY+NzdymfdkZ+eaWkcrfRLXwAePHHbafa5jV2HCdtzmte5Hccb01iAoOYkG3I4IvHw=="
-            }
-          ]
-        }
-      }
-    },
-    "sodium": {
-      "mc1.21.1-0.6.0-fabric": {
-        "type": "raw",
-        "version_type": "release",
-        "minecraft_versions": [
-          "1.21",
-          "1.21.1"
-        ],
-        "loaders": [
-          "fabric",
-          "quilt"
-        ],
-        "files": {
-          "jars": [
-            {
-              "name": "sodium-fabric-0.6.0+mc1.21.1.jar",
-              "url": "https://cdn.modrinth.com/data/AANobbMI/versions/b70slbHV/sodium-fabric-0.6.0%2Bmc1.21.1.jar",
-              "hash": "sha512-97kpibpjEjUmI9AxHFu3HrjaFOouWgcPOpWaHxDP5oz8hIfPjb3pGH2EnWwEgz3yqXS+EpSe+uiq/+hzgVunpQ=="
-            }
-          ]
-        }
-      }
+      "url": "https://piston-meta.mojang.com/v1/packages/db3b018010085e7a8b4e769d2cdc659eae8c3504/1.21.1.json",
+      "sha256": "SCLf9cM0iACbO8NMCkP3+aX2R31nVBsmpTih5KmBVTE="
     }
   }
 }

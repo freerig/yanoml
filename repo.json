@@ -1,0 +1,30 @@
+{
+  "mods": {
+    "jade": {
+      "19.3.2+fabric": {
+        "type": "raw",
+        "version_type": "release",
+        "compatibility": {
+          "minecraft_versions": [
+            "1.21.6",
+            "1.21.7",
+            "1.21.8"
+          ],
+          "loaders": [
+            "fabric",
+            "quilt"
+          ]
+        },
+        "content": {
+          "jars": [
+            {
+              "name": "Jade-1.21.8-Fabric-19.3.2.jar",
+              "url": "https://cdn.modrinth.com/data/nvQzSEkH/versions/o3aatc5Q/Jade-1.21.8-Fabric-19.3.2.jar",
+              "hash": "sha512-PPZsSoWYBYhnd/GNNU9YfbNm8qe7R3gd7ngr0tKe0ZUA4FIbHRnCcByKFtbhFuclawqyh9OH5X0CoEMOExLtSw=="
+            }
+          ]
+        }
+      }
+    }
+  }
+}

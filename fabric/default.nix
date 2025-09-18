@@ -13,6 +13,10 @@ let
     server = mkLibs "server";
   };
 
+  # FIXME: I'm not sure about the separator, maybe it's not cross-compatible
+  joinedMods = builtins.concatStringsSep ":" (builtins.concatMap
+    (mod: if mod ? "content" then mod.content.jars else [ mod ]) mods);
+
 in {
   client = {
     inherit (minecraftParsedMeta.client) assets;
@@ -23,13 +27,7 @@ in {
           ++ (if builtins.length mods == 0 then
             [ ]
           else
-          # FIXME: I'm not sure about the separator
-            [
-              "-Dfabric.addMods=${
-                builtins.concatStringsSep ":" (builtins.concatMap
-                  (mod: if mod ? "files" then mod.files.jars else [ mod ]) mods)
-              }"
-            ]);
+            [ "-Dfabric.addMods=${joinedMods}" ]);
       };
     };
     libraries = libraries.client;
@@ -43,13 +41,7 @@ in {
           ++ (if builtins.length mods == 0 then
             [ ]
           else
-          # FIXME: I'm not sure about the separator
-            [
-              "-Dfabric.addMods=${
-                builtins.concatStringsSep ":" (builtins.concatMap
-                  (mod: if mod ? "files" then mod.files.jars else [ mod ]) mods)
-              }"
-            ]);
+            [ "-Dfabric.addMods=${joinedMods}" ]);
       };
     };
     libraries = libraries.server;

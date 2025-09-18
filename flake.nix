@@ -12,6 +12,7 @@
         lib = nixpkgs.lib;
         pkgs = import nixpkgs { inherit system; };
         inputs = { inherit lib pkgs; };
+        myLib = import ./lib.nix inputs;
       in {
         mkMinecraft = let
           mkRole = role:
@@ -61,26 +62,13 @@
         apps = let
           mkNuApp = name: file: {
             type = "app";
-            program = builtins.toString (pkgs.writeShellScript name
-              ''${lib.getExe pkgs.nushell} ${file} "$@"'');
+            program = builtins.toString (lib.getExe
+              (myLib.writeSimpleNushellScriptBin "manage-yanoml-repo"
+                (builtins.readFile file)));
           };
-          repo = ./repo;
         in {
           prefetch = mkNuApp "prefetch-minecraft-assets" ./prefetch-assets.nu;
-          repo = {
-            vanilla.add-minecraft = mkNuApp "add-minecraft-vanilla"
-              "${repo}/vanilla/add-minecraft.nu";
-            fabric = {
-              add-minecraft = mkNuApp "add-minecraft-fabric"
-                "${repo}/fabric/add-minecraft.nu";
-              add-loader =
-                mkNuApp "add-minecraft-fabric" "${repo}/fabric/add-loader.nu";
-            };
-            mods = {
-              add-mod =
-                mkNuApp "add-minecraft-fabric" "${repo}/mods/add-mod.nu";
-            };
-          };
+          repo = mkNuApp "manage-yanoml-repo" ./repo/manage.nu;
         };
       });
 }

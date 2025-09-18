@@ -22,9 +22,9 @@ in {
   mods = builtins.mapAttrs (modName:
     builtins.mapAttrs (modVersionId: modVersionData:
       (if modVersionData.type == "raw" then {
-        files = builtins.mapAttrs
+        content = builtins.mapAttrs
           (fileType: map (data: pkgs.fetchurl { inherit (data) url hash; }))
-          modVersionData.files;
+          modVersionData.content or modVersionData.files or { }; # TODO: remove legacy support
       } else if modVersionData.type == "modrinth" then
       # modrinthToParsedMeta (myLib.fetchJSON {
       #   url = "https://api.modrinth.com/v2/version/${modVersionData.id}";

@@ -19,6 +19,13 @@ let
     ] else
       [ ]);
 
+  nativesDir = pkgs.symlinkJoin {
+    name = "natives";
+    paths =
+      builtins.concatMap (lib: if lib ? "natives" then [ lib.natives ] else [ ])
+      parsedMeta.libraries;
+  };
+
 in (myLib.writeNushellScript "mc.nu" {
   inherit (parsedMeta) libraries arguments mainClass;
   version = { inherit (versionInfos) id type; };
@@ -36,14 +43,10 @@ in (myLib.writeNushellScript "mc.nu" {
     ] {
       let tmp = mktemp -d
 
-      cp -r ${
-        pkgs.symlinkJoin {
-          name = "natives";
-          paths = builtins.concatMap
-            (lib: if lib ? "natives" then [ lib.natives ] else [ ])
-            parsedMeta.libraries;
-        }
-      }/* $tmp
+      let native_files = glob ${nativesDir}/*
+      if ($native_files | length) > 0 {
+        cp -r ${nativesDir}/* $tmp
+      }
 
       let replacements = {
         classpath: ($inputs.libraries | each {|lib| $lib | get jar --optional} | str join ":")
