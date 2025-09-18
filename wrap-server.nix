@@ -16,7 +16,7 @@ in (myLib.writeNushellScript "mc.nu" {
       --server-dir: string = "./minecraft-server" # The Minecraft server storage directory. It's used to save worlds, config...
     ] {
       let replacements = {
-        classpath: ($inputs.libraries | each {|lib| $lib.jar} | str join ":")
+        classpath: ($inputs.libraries | each {|lib| $lib | get jar --optional} | str join ":")
         classpath_separator: ":"
       }
 

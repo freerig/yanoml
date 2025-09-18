@@ -43,10 +43,10 @@ in (myLib.writeNushellScript "mc.nu" {
             (lib: if lib ? "natives" then [ lib.natives ] else [ ])
             parsedMeta.libraries;
         }
-      } $tmp
+      }/* $tmp
 
       let replacements = {
-        classpath: ($inputs.libraries | each {|lib| $lib.jar} | str join ":")
+        classpath: ($inputs.libraries | each {|lib| $lib | get jar --optional} | str join ":")
         classpath_separator: ":"
         natives_directory: $tmp
         assets_root: ${

@@ -46,48 +46,53 @@ let
       false
     else
       builtins.elem 1 ruleWeights;
-
 in {
   client = {
     mainClass = minecraftRawMeta.mainClass;
 
     libraries = map (rawLibrary:
-      {
+      (if rawLibrary.downloads
+      ? "artifact" then { # Some libs doesn't have a main jar
         jar = fetchSha1 rawLibrary.downloads.artifact;
-      } // (if rawLibrary ? "natives" then {
-        natives = pkgs.runCommand "minecraft-java-natives" { } ''
-          mkdir -p $out
-          cd $TMPDIR
-
-          ${pkgs.jdk}/bin/jar xf ${
-            fetchSha1 rawLibrary.downloads.classifiers.${
-              rawLibrary.natives.${currentOs.name}
-            }
-          }
-
-          shopt -s nullglob
-          for f in ./*.{dylib,so,dll}; do
-            mv "$f" "$out/"
-          done
-        '';
       } else
-        { }))
+        { }) // (if rawLibrary ? "natives" then {
+          natives = pkgs.runCommand "minecraft-java-natives" { } ''
+            mkdir -p $out
+            cd $TMPDIR
 
-      (builtins.filter (x: !x ? "rules" || evalRules x.rules)
-        minecraftRawMeta.libraries) ++ [{
-          jar = fetchSha1 minecraftRawMeta.downloads.client;
-          natives = [ ];
-        }];
+            ${pkgs.jdk}/bin/jar xf ${
+              fetchSha1 rawLibrary.downloads.classifiers.${
+                rawLibrary.natives.${currentOs.name}
+              }
+            }
 
-    arguments = builtins.mapAttrs (argListType: manifestArgs: {
-      raw = builtins.concatMap (arg:
-        if builtins.isString arg then
-          [ arg ]
-        else if (evalRules arg.rules) then
-          if builtins.isString arg.value then [ arg.value ] else arg.value
-        else
-          [ ]) manifestArgs;
-    }) minecraftRawMeta.arguments;
+            shopt -s nullglob
+            for f in ./*.{dylib,so,dll}; do
+              mv "$f" "$out/"
+            done
+          '';
+        } else
+          { })) (builtins.filter (x: !x ? "rules" || evalRules x.rules)
+            minecraftRawMeta.libraries) ++ [{
+              jar = fetchSha1 minecraftRawMeta.downloads.client;
+              natives = [ ];
+            }];
+
+    arguments = if minecraftRawMeta ? "arguments" then # For older version...
+      builtins.mapAttrs (argListType: manifestArgs: {
+        raw = builtins.concatMap (arg:
+          if builtins.isString arg then
+            [ arg ]
+          else if (evalRules arg.rules) then
+            if builtins.isString arg.value then [ arg.value ] else arg.value
+          else
+            [ ]) manifestArgs;
+      }) minecraftRawMeta.arguments
+    else {
+      jvm.raw = [ "-cp" "\${classpath}" ];
+      game.raw = lib.splitString " "
+        minecraftRawMeta.minecraftArguments; # Hopping there is no escaping for space
+    };
 
     assets = let
       indexes = fetchSha1 minecraftRawMeta.assetIndex;
@@ -110,7 +115,7 @@ in {
     };
   };
   server = let
-    extracted = pkgs.runCommand "minecraft-java-natives" { } ''
+    extracted = pkgs.runCommand "minecraft-server-installer-extracted" { } ''
       mkdir -p $out
       cd $out
       ${pkgs.jdk}/bin/jar xf ${fetchSha1 minecraftRawMeta.downloads.server}
