@@ -85,7 +85,7 @@ The documentation isn't ready right now, but you can find some examples in the `
 
 You can either leave an issue or open a discussion, your choice.
 
-### There isn't any .minecraft/mods dir but mods still works, how?
+### There isn't any `.minecraft/mods` dir but mods still works, how?
 
 That's real magic.
 

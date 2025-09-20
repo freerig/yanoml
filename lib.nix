@@ -1,26 +1,44 @@
 inputs:
 
-rec {
-  inherit (inputs) pkgs lib;
-  writeNushellScript = name: data: script:
-    pkgs.writeShellScript name ''
-      ${pkgs.coreutils}/bin/env ${
-        lib.strings.escapeShellArg "INPUT=${builtins.toJSON data}"
-      } ${lib.getExe pkgs.nushell} ${pkgs.writeText "${name}.nu" script} "$@"
-    '';
+let inherit (inputs) pkgs lib;
+in rec {
+  nu = {
+    # Use this function if your script doesn't need to use other scripts (no `use ./lib.nu`)
+    writeSimpleNushellScript = name: script:
+      pkgs.writeTextFile {
+        inherit name;
+        executable = true;
+        text = ''
+          #!${lib.getExe pkgs.nushell}
 
-  writeSimpleNushellScriptBin = name: script:
-    pkgs.writeTextFile {
-      inherit name;
-      executable = true;
-      destination = "/bin/${name}";
-      text = ''
-        #!${lib.getExe pkgs.nushell}
+          ${script}
+        '';
+      };
 
-        ${script}
+    # Use this to allow the script to access local files
+    writeNushellScriptDir = name:
+      { rootDir, inputs ? null }:
+      pkgs.runCommand "${name}-root" { } ''
+        mkdir -p $out
+        cp -r ${rootDir}/* $out
+        ls $out
+        ln -s ${
+          pkgs.writeText "inputs.json" (builtins.toJSON inputs)
+        } $out/inputs.json
       '';
-      meta.mainProgram = name;
-    };
+    wrapNushellFileBin = name: path:
+      pkgs.writeTextFile {
+        inherit name;
+        executable = true;
+        destination = "/bin/${name}";
+        text = ''
+          #!${lib.getExe pkgs.nushell}
+
+          source ${path}
+        '';
+        meta.mainProgram = name;
+      };
+  };
 
   joinIntoDirectory = name: derivations:
     pkgs.runCommand name { } ''
