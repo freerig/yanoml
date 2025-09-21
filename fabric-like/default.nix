@@ -1,13 +1,14 @@
 inputs:
-{ minecraftParsedMeta, fabricMeta, mods ? [ ] }:
+{ minecraftParsedMeta, fabricLikeMeta, loader, mods ? [ ] }:
 
 let
   libraries = let
     mkLibs = role:
       minecraftParsedMeta.${role}.libraries ++ (map (lib: { jar = lib; })
-        (fabricMeta.loader.libraries.common
-          ++ fabricMeta.loader.libraries.${role}
-          ++ [ fabricMeta.loader.main fabricMeta.adapter.intermediary ]));
+        (fabricLikeMeta.loader.libraries.common
+          ++ fabricLikeMeta.loader.libraries.${role}
+          ++ (builtins.attrValues fabricLikeMeta.adapter)
+          ++ [ fabricLikeMeta.loader.main ]));
   in {
     client = mkLibs "client";
     server = mkLibs "server";
@@ -16,6 +17,13 @@ let
   # FIXME: I'm not sure about the separator, maybe it's not cross-compatible
   joinedMods = builtins.concatStringsSep ":" (builtins.concatMap
     (mod: if mod ? "content" then mod.content.jars else [ mod ]) mods);
+
+  addModsArg = if loader == "fabric" then
+    "fabric.addMods"
+  else if loader == "quilt" then
+    "loader.addMods"
+  else
+    throw "Fabric-like loader ${loader} isn't implemented";
 
 in {
   client = {
@@ -27,11 +35,11 @@ in {
           ++ (if builtins.length mods == 0 then
             [ ]
           else
-            [ "-Dfabric.addMods=${joinedMods}" ]);
+            [ "-D${addModsArg}=${joinedMods}" ]);
       };
     };
     libraries = libraries.client;
-    mainClass = fabricMeta.loader.mainClass.client;
+    mainClass = fabricLikeMeta.loader.mainClass.client;
   };
   server = {
     arguments = {
@@ -41,11 +49,11 @@ in {
           ++ (if builtins.length mods == 0 then
             [ ]
           else
-            [ "-Dfabric.addMods=${joinedMods}" ]);
+            [ "-D${addModsArg}=${joinedMods}" ]);
       };
     };
     libraries = libraries.server;
-    mainClass = fabricMeta.loader.mainClass.server;
+    mainClass = fabricLikeMeta.loader.mainClass.server;
   };
 }
 

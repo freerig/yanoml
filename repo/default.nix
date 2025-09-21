@@ -4,19 +4,27 @@ let
   inherit (inputs) pkgs;
   myLib = import ../lib.nix inputs;
   rawRepo = myLib.getJSON repoFile;
-in {
-  vanilla = builtins.mapAttrs (version: myLib.fetchJSON) rawRepo.vanilla;
 
-  fabric = {
+  mkParsedFabricLike = raw: {
     loaders = builtins.mapAttrs (loaderVersion: loaderData: {
       inherit (loaderData) mainClass;
       main = pkgs.fetchurl loaderData.main;
       libraries =
         builtins.mapAttrs (libType: map pkgs.fetchurl) loaderData.libraries;
-    }) rawRepo.fabric.loaders;
+    }) raw.loaders;
     adapters =
       builtins.mapAttrs (mcVersion: builtins.mapAttrs (idk: pkgs.fetchurl))
-      rawRepo.fabric.adapters;
+      raw.adapters;
+  };
+in {
+  vanilla = builtins.mapAttrs (version: myLib.fetchJSON) rawRepo.vanilla;
+
+  fabric = mkParsedFabricLike rawRepo.fabric;
+  quilt = mkParsedFabricLike {
+    inherit (rawRepo.quilt) loaders;
+    adapters = builtins.mapAttrs (minecraftVersion: adapters:
+      adapters // rawRepo.fabric.adapters.${minecraftVersion})
+      rawRepo.quilt.adapters;
   };
 
   mods = builtins.mapAttrs (modName:

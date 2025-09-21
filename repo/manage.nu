@@ -1,5 +1,5 @@
 # Manage a YANOML repo
-def main [] {
+export def main [] {
   help main
 }
 
@@ -19,7 +19,7 @@ def edit_repo [
     | save -f $file
 }
 
-export def maven_name_to_url [
+def maven_name_to_url [
   maven_base_url: string
   name: string
 ] {
@@ -32,7 +32,7 @@ export def maven_name_to_url [
 }
 
 # You better not use this one
-def "main mod add manual" [
+export def "main mod add manual" [
   format: string
   mod_name: string
   mod_version: string
@@ -60,7 +60,7 @@ def "main mod add manual" [
           jars: ($meta.files | where primary == true | each { |file| {
             name: $file.filename
             url: $file.url
-            hash: $"sha512-($file.hashes.sha512 | decode hex | encode base64)" # We use SRI because some mod providers don't provide the hash we want. Maybe we should fetch the jar and compute the hash in the script direcly.
+            hash: sha512-($file.hashes.sha512 | decode hex | encode base64)
           }})
         }
       } | add
@@ -74,7 +74,7 @@ def "main mod add manual" [
 }
 
 # Add a Modrinth mod to the repo
-def "main mod add modrinth" [
+export def "main mod add modrinth" [
   project_id: string # The Modrinth project id that can be found by clicking the three points button at the top left of the mod page and then selecting "Copy ID" (or similar)
   --mod-name: string # The mod name, can overwrite the mod name provided by modrinth (use the name in the url)
   --mod-version: string # The mod version you want to install (not the Minecraft version)
@@ -126,82 +126,139 @@ def "main mod add modrinth" [
 }
 
 # Add a Minecraft vanilla version to the repo
-def "main vanilla add" [
+export def "main vanilla add" [
   minecraft_version: string # The Minecraft version you want to add (ex: 1.21.1)
 ] {
   # I really wanna make a cult arround how easy it is to implement the vanilla meta. If everything was this simple, we wouldn't even need a repo!
 
   let versions_manifest = http get https://piston-meta.mojang.com/mc/game/version_manifest.json
   let manifest_url = $versions_manifest.versions | where id == $minecraft_version | first | get url
-  let manifest_hash = http get $manifest_url --raw | hash sha256 --binary | encode base64
+  let manifest_hash = $"sha256-(http get $manifest_url --raw | hash sha256 --binary | encode base64)"
 
   let to_add = {
     url: $manifest_url
-    sha256: $manifest_hash
+    hash: $manifest_hash
   }
 
   edit_repo { |data| $data | upsert ([vanilla $minecraft_version] | into cell-path) $to_add }
   $to_add
 }
 
-# Add a Fabric loader version to the repo
-def "main fabric add loader" [
-  --loader-version: string # The Fabric loader version (ex: 0.17.2). Defaults to the latest stable.
+def "add fabric-like loader" [
+  base_url: string
+  maven_url: string
+  loader_version: string
+  output: string
 ] {
-  let base_url = "https://meta.fabricmc.net/v2"
   let versions = http get ($base_url)/versions
-
-  let loader_version = $loader_version | default ($versions.loader | where stable | first | get version)
 
   let oldest_minecraft_version = $versions.game | last | get version
   let loader_large_meta =  http get ($base_url)/versions/loader/($oldest_minecraft_version)/($loader_version)
 
-  let loader_url = maven_name_to_url https://maven.fabricmc.net $loader_large_meta.loader.maven
+  let loader_url = maven_name_to_url $maven_url $loader_large_meta.loader.maven
 
-  let update_library_format = {|lib| {
-    url: (maven_name_to_url $lib.url $lib.name)
-    sha256: ($lib.sha256 | decode hex | encode base64)
-  }}
+  let update_library_format = {|lib|
+    let url = maven_name_to_url $lib.url $lib.name
+    {
+      url: $url
+      hash: sha256-(if "sha256" in ($lib | columns) {
+        $lib.sha256 | decode hex | encode base64
+      } else {
+        http get $"($url).sha256" | decode ascii | decode hex | encode base64
+      })
+    }
+  }
 
   let launch_meta = $loader_large_meta.launcherMeta
 
   let to_add = {
     main: {
       url: $loader_url
-      sha256: (http get $loader_url | hash sha256 --binary | encode base64)
+      hash: sha256-(http get $loader_url | hash sha256 --binary | encode base64)
     }
     libraries: ($launch_meta.libraries | update cells {$in | each $update_library_format})
     mainClass: $launch_meta.mainClass
   }
 
-  edit_repo {|data| $data | upsert ([fabric loaders $loader_version] | into cell-path) $to_add} 
+  edit_repo {|data| $data | upsert ([$output loaders $loader_version] | into cell-path) $to_add} 
   $to_add
 }
 
-# Add a Fabric adapter to the repo
-def "main fabric add minecraft" [
-  minecraft_version: string # The Minecraft version for which you wanna add the fabric adapter (ex: 1.21.1)
+def "add fabric-like minecraft" [
+  base_url: string
+  maven_url: string
+  minecraft_version: string
+  output: string
+  ...adapters: string
 ] {
-  let vanilla_output = main vanilla add $minecraft_version
-
-  let base_url = "https://meta.fabricmc.net/v2"
   let versions = http get ($base_url)/versions
   let oldest_minecraft_version = $versions.game | last | get version
 
   let loader_large_meta =  http get ($base_url)/versions/loader/($minecraft_version) | first
 
-  let intermediary_url = maven_name_to_url https://maven.fabricmc.net $loader_large_meta.intermediary.maven
+  # intermediary
 
-  let to_add = {
-    intermediary: {
-      url: $intermediary_url
-      sha256: (http get $intermediary_url | hash sha256 --binary | encode base64)
+  let to_add = $adapters | reduce --fold {} { |adapter, acc|
+    let url = maven_name_to_url $maven_url ($loader_large_meta | get $adapter | get maven)
+    $acc | upsert $adapter {
+      url: $url
+      hash: sha256-(http get $url | hash sha256 --binary | encode base64)
     }
   }
 
-  edit_repo {|data| $data | upsert ([fabric adapters $minecraft_version] | into cell-path) $to_add}
+  edit_repo {|data| $data | upsert ([$output adapters $minecraft_version] | into cell-path) $to_add}
+  $to_add
+}
+
+# Add a Fabric loader version to the repo
+export def "main fabric add loader" [
+  --loader-version: string # The Fabric loader version (ex: 0.17.2). Defaults to the latest stable.
+] {
+  let base_url = "https://meta.fabricmc.net/v2";
+  let versions = http get ($base_url)/versions
+
+  let loader_version = $loader_version | default ($versions.loader | where stable | first | get version)
+
+  add fabric-like loader $base_url https://maven.fabricmc.net $loader_version fabric
+}
+
+# Add a Fabric adapter to the repo
+export def "main fabric add minecraft" [
+  minecraft_version: string # The Minecraft version for which you wanna add the fabric adapter (ex: 1.21.1)
+] {
+  let vanilla_output = main vanilla add $minecraft_version
+
+  let fabric_output = add fabric-like minecraft https://meta.fabricmc.net/v2 https://maven.fabricmc.net $minecraft_version fabric intermediary
+
   {
     vanilla: $vanilla_output
-    fabric: $to_add
+    fabric: $fabric_output
+  }
+}
+
+# Add a Fabric loader version to the repo
+export def "main quilt add loader" [
+  --loader-version: string # The Fabric loader version (ex: 0.17.2). Defaults to the latest stable.
+] {
+  let base_url = "https://meta.quiltmc.org/v3"
+  let versions = http get ($base_url)/versions
+
+  let loader_version = $loader_version | default ($versions.loader | where { |version| not ($version.version | str contains beta) } | first | get version)
+
+  add fabric-like loader $base_url https://maven.quiltmc.org/repository/release $loader_version quilt
+}
+
+export def "main quilt add minecraft" [
+  minecraft_version: string # The Minecraft version for which you wanna add the fabric adapter (ex: 1.21.1)
+] {
+  let fabric_output = main fabric add minecraft $minecraft_version
+
+  let quilt_output = add fabric-like minecraft https://meta.quiltmc.org/v3 https://maven.quiltmc.org/repository/release $minecraft_version quilt hashed
+
+  
+  {
+    vanilla: $fabric_output.vanilla
+    fabric: $fabric_output.fabric
+    quilt: $quilt_output
   }
 }

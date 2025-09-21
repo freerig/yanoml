@@ -24,13 +24,15 @@
 
             parsedMeta = if modLoader == "vanilla" then
               minecraftParsedMeta
-            else if modLoader == "fabric" then
-              (import ./fabric inputs {
+            else if modLoader == "fabric" || modLoader == "quilt" then
+              (import ./fabric-like inputs {
                 inherit minecraftParsedMeta;
-                fabricMeta = {
-                  loader = repo.fabric.loaders.${modLoaderVersion};
-                  adapter = repo.fabric.adapters.${minecraftVersion};
+                fabricLikeMeta = let meta = repo.${modLoader};
+                in {
+                  loader = meta.loaders.${modLoaderVersion};
+                  adapter = meta.adapters.${minecraftVersion};
                 };
+                loader = modLoader;
                 mods = modPredicate repo.mods;
               })
             else

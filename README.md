@@ -6,7 +6,7 @@
 Tired of not being able to take advantage of the Nix store to play Minecraft? Tired of installing Fabric manually, and copying the mod files from the .zip your non-existent friend sent you? I got *the* solution for you: *YANOML*.
 
 This project allows to:
-- run Minecraft Java client and server, vanilla or fabric (more loaders to come, stay tuned)
+- run Minecraft Java client and server, vanilla, Fabric or Quilt (more loaders to come, stay tuned)
 - build and distribute a derivation for it (Minecraft version, mods and libraries are defined at build time while player-specific parameters like username and game dir are managable with a CLI arg given to the derivation)
 - store all the static files like assets, libraries or mods into the Nix store instaid of in the game directory (which is the default behaviour). No more `.minecraft/assets` and `.minecraft/mods`!
 
@@ -25,7 +25,7 @@ It is really good, but if you really want a proof, you can follow the following 
    nix run github:freerig/yanoml#examples.basic.client
    ```
    If it doesn't work and you don't know what you are doing wrong, please leave an issue or open a discussion.
-   You can also run some other examples like `examples.basic.server`, `examples.fabric.client` or `examples.fabric.server` (see in the `examples` directory).
+   You can also run some other examples like `examples.basic.server`, `examples.fabric.client` or `examples.fabric.server` (you can replace `fabric` with `quilt`) (see in the `examples` directory).
 
 ## Now I know it's really good, and I wanna make a flake of it
 
@@ -66,11 +66,12 @@ Just type `nix run github:freerig/yanoml#examples.basic.client -- --help` to see
 
 These commands will be applied to `$PWD/repo.json` (this file will be created if it doesn't exist already). Don't forget to change the command parameters to reflect your needs. **All these commands have a `--help` menu.**
 - Add a vanilla Minecraft version: `nix run github:freerig/yanoml#repo -- vanilla add 1.21.1`
-- Add Fabric (Forge isn't supported right now):
+- Add Fabric or Quilt (Forge isn't supported right now):
   ```shell
   nix run github:freerig/yanoml#repo -- fabric add loader # This is to install the Fabric loader (kinda the core of Fabric). It install the latest by default (see --help)
   nix run github:freerig/yanoml#repo -- fabric add minecraft 1.21.1 # Fabric needs an intermediary lib for each Minecraft version it will run on.
   ```
+  (you can replace `fabric` with `quilt`)
 - Add a mod (only Modrinth is currently supported):
   `nix run github:freerig/yanoml#repo -- mod add modrinth nvQzSEkH -v 1.21.1 -l fabric -L`
   This adds the latest version of the [Jade](https://modrinth.com/mod/jade) mod that is compatible with Fabric running Minecraft `1.21.1`. You can find the mod id (in this case `nvQzSEkH`) by clicking the three points button at the top left of the Modrinth mod page and then selecting "Copy ID".
@@ -99,7 +100,7 @@ Maybe, check on the GitHub issues and discussions to see. If you find nothing, l
 
 ### Can I get some mods with this?
 
-Yes, but it only supports Fabric for now (Quilt, Forge and others will come one day). `nix run github:freerig/yanoml#examples.fabric.client` allows you to run a Minecraft Fabric client with [Fabric API](https://modrinth.com/mod/fabric-api), [Immersive Portals](https://modrinth.com/mod/immersiveportals), [Pehkui](https://modrinth.com/mod/pehkui), [Jade](https://modrinth.com/mod/jade), [Mod Menu](https://modrinth.com/mod/modmenu) and [Sodium](https://modrinth.com/mod/sodium) installed.
+Yes, but it only supports Fabric and Quilt for now (Forge and others will come one day). `nix run github:freerig/yanoml#examples.fabric.client` allows you to run a Minecraft Fabric client with [Fabric API](https://modrinth.com/mod/fabric-api), [Immersive Portals](https://modrinth.com/mod/immersiveportals), [Pehkui](https://modrinth.com/mod/pehkui), [Jade](https://modrinth.com/mod/jade), [Mod Menu](https://modrinth.com/mod/modmenu) and [Sodium](https://modrinth.com/mod/sodium) installed. You can replace `examples.fabric.client` with `examples.quilt.client` if you want.
 
 ### Is it any good?
 
