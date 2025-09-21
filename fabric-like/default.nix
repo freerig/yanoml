@@ -14,9 +14,9 @@ let
     server = mkLibs "server";
   };
 
-  # FIXME: I'm not sure about the separator, maybe it's not cross-compatible
-  joinedMods = builtins.concatStringsSep ":" (builtins.concatMap
-    (mod: if mod ? "content" then mod.content.jars else [ mod ]) mods);
+  jars = builtins.concatMap
+    (mod: if mod ? "content" then mod.content.jars else [ mod ]) mods;
+  joinedMods = builtins.concatStringsSep ":" jars;
 
   addModsArg = if loader == "fabric" then
     "fabric.addMods"
@@ -25,35 +25,26 @@ let
   else
     throw "Fabric-like loader ${loader} isn't implemented";
 
+  getBaseParsed = role: {
+    arguments = {
+      inherit (minecraftParsedMeta.${role}.arguments) game;
+      jvm = {
+        raw = minecraftParsedMeta.${role}.arguments.jvm.raw
+          ++ (if builtins.length mods == 0 then
+            [ ]
+          else
+            [ "-D${addModsArg}=${joinedMods}" ]);
+      };
+    };
+    libraries = libraries.${role};
+    mainClass = fabricLikeMeta.loader.mainClass.${role};
+    includeStores = minecraftParsedMeta.${role}.includeStores or [ ] ++ jars;
+  };
+
 in {
-  client = {
+  client = getBaseParsed "client" // {
     inherit (minecraftParsedMeta.client) assets;
-    arguments = {
-      inherit (minecraftParsedMeta.client.arguments) game;
-      jvm = {
-        raw = minecraftParsedMeta.client.arguments.jvm.raw
-          ++ (if builtins.length mods == 0 then
-            [ ]
-          else
-            [ "-D${addModsArg}=${joinedMods}" ]);
-      };
-    };
-    libraries = libraries.client;
-    mainClass = fabricLikeMeta.loader.mainClass.client;
   };
-  server = {
-    arguments = {
-      inherit (minecraftParsedMeta.server.arguments) game;
-      jvm = {
-        raw = minecraftParsedMeta.server.arguments.jvm.raw
-          ++ (if builtins.length mods == 0 then
-            [ ]
-          else
-            [ "-D${addModsArg}=${joinedMods}" ]);
-      };
-    };
-    libraries = libraries.server;
-    mainClass = fabricLikeMeta.loader.mainClass.server;
-  };
+  server = getBaseParsed "server";
 }
 

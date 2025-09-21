@@ -84,21 +84,36 @@ The documentation isn't ready right now, but you can find some examples in the `
 
 ## Q&A
 
-### I have a problem with...
-
-You can either leave an issue or open a discussion, your choice.
-
 ### There isn't any `.minecraft/mods` dir but mods still works, how?
 
 That's real magic.
 
-### Is it safe to use? Did you do hardening?
+### I have a problem with...
 
-No, definitely not. It's the most basic client and server. I will maybe write an optional hardening layer using [Bubblewrap](https://github.com/containers/bubblewrap), to isolate the filesystem. You should install only [trustworthy mods](https://docs.fabricmc.net/players/finding-mods)!
+You can either leave an issue or open a discussion, your choice.
 
 ### Will ... be implemented?
 
 Maybe, check on the GitHub issues and discussions to see. If you find nothing, leave one!
+
+### Is it safe to use? Did you do hardening?
+
+You can't consider something 100% safe, but YANOML provides a hardening layer via Bubblewrap that you can enable by adding the `--bubblewrap` option to the CLI. This allows Minecraft to access only the files that it needs (see bellow).
+
+The client can access:
+1. the Minecraft game dir you defined (via `--game-dir`)
+2. libraries and mods in the Nix store (only those are shared, not all the Nix store)
+3. Internet/network access
+4. `/dev`, `/run`, `/sys`, `/etc`, `/tmp/.X11-unix` (these one are for graphic stuff essentially, which is why the server doesn't have them)
+
+The server can access:
+1. the Minecraft game dir you defined (via `--server-dir`)
+2. libraries and mods in the Nix store (only those are shared, not all the Nix store)
+3. Internet/network access
+
+Be aware that an eventual attacker can still try to use these directories to access other directories, and there might be sensitive data accessible from these paths without you knowing.
+
+Also, you should only install [trustworthy mods](https://docs.fabricmc.net/players/finding-mods)!
 
 ### Can I get some mods with this?
 

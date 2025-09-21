@@ -123,7 +123,7 @@ in {
   in {
     arguments = {
       jvm.raw = [ "-cp" "\${classpath}" ];
-      game.raw = [ ];
+      game.raw = [ "--nogui" ]; # This is better
     };
     libraries = let
       rawPaths = lib.splitString ";"
