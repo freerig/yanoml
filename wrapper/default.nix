@@ -1,5 +1,5 @@
 inputs:
-{ parsedMeta, versionInfos }:
+{ parsedMeta, versionInfos, files }:
 
 let
   inherit (inputs) pkgs lib;
@@ -50,6 +50,8 @@ in {
         java = lib.getExe pkgs.openjdk;
         uuidgen = "${pkgs.util-linux}/bin/uuidgen";
       };
+
+      files = files.client or { };
     };
 
     dir = myLib.nu.writeNushellScriptDir "minecraft" {
@@ -62,6 +64,7 @@ in {
     wrapperInputs = {
       inherit (parsedMeta.server) libraries arguments mainClass;
       programs.java = lib.getExe pkgs.openjdk;
+      files = files.server or { };
     };
 
     dir = myLib.nu.writeNushellScriptDir "minecraft" {

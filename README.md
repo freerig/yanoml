@@ -1,7 +1,7 @@
 <h1 align="center"> YANOML </h1>
 <p align="center"> <b>Y</b>et <b>A</b>nother <b>N</b>ix <b>O</b>verfine <b>M</b>inecraft <b>L</b>auncher </p>
 
-[Test me!](#so-how-do-i-test-your-thing-because-idk-if-its-really-good)
+[Test me!](#how-can-i-test-this-project-because-idk-if-its-really-good)
 
 Tired of not being able to take advantage of the Nix store to play Minecraft? Tired of installing Fabric manually, and copying the mod files from the .zip your non-existent friend sent you? I got *the* solution for you: *YANOML*.
 
@@ -10,7 +10,7 @@ This project allows to:
 - build and distribute a derivation for it (Minecraft version, mods and libraries are defined at build time while player-specific parameters like username and game dir are managable with a CLI arg given to the derivation)
 - store all the static files like assets, libraries or mods into the Nix store instaid of in the game directory (which is the default behaviour). No more `.minecraft/assets` and `.minecraft/mods`!
 
-## So how do I test your thing because idk if it's really good?
+## How can I test this project? (because idk if it's really good)
 
 It is really good, but if you really want a proof, you can follow the following steps to run Minecraft 1.21.1:
 
@@ -46,11 +46,12 @@ It is really good, but if you really want a proof, you can follow the following 
        let system = "x86_64-linux";
        in {
          packages.${system} = rec {
-           my-great-minecraft-client = (yanoml.mkMinecraft.${system} {
+           my-great-minecraft-packages = yanoml.mkMinecraft.${system} {
              minecraftVersion = "1.21.1";
              repoFile = ./repo.json;
-           }).client;
-           default = my-great-minecraft-client;
+           };
+
+           default = my-great-minecraft-packages.client; # You guessed, you can put `server` instaid
          };
        };
    }
@@ -60,10 +61,11 @@ It is really good, but if you really want a proof, you can follow the following 
 
 ### Change runtime props (username, gamedir...)
 
-Just type `nix run github:freerig/yanoml#examples.basic.client -- --help` to see more options! (this will go faster if you launch the game a first time using the [commands described earlier](#so-how-do-i-test-your-thing-because-idk-if-its-really-good))
+Just type `nix run github:freerig/yanoml#examples.basic.client -- --help` to see more options! (this will go faster if you launch the game a first time using the [commands described earlier](#how-can-i-test-this-project-because-idk-if-its-really-good))
 
 ### Create/manage a `repo.json`
 
+The `repo.json` stores all the hashes of the Minecraft versions and mods you want to install, so you must create one in order to make your packages reproducible.
 These commands will be applied to `$PWD/repo.json` (this file will be created if it doesn't exist already). Don't forget to change the command parameters to reflect your needs. **All these commands have a `--help` menu.**
 - Add a vanilla Minecraft version: `nix run github:freerig/yanoml#repo -- vanilla add 1.21.1`
 - Add Fabric or Quilt (Forge isn't supported right now):
@@ -112,10 +114,6 @@ Not yet ready...
 
 ### Can I manage config files like `options.txt`, `eula.txt` or `server.properties` using Nix?
 
-This is not implemented (at least for now).
-
-### Your project sucks.
-
-No it doesn't lol, but you can always propose some improvements in the discussions or issues!
+Yes! You can go in the examples and see how it's done (look in the `files.server` option of `basicOptions`).
 
 Oh, and btw, it's experimental.

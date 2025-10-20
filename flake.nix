@@ -15,7 +15,7 @@
         myLib = import ./lib.nix inputs;
       in {
         mkMinecraft = { minecraftVersion, repoFile, modLoader ? "vanilla"
-          , modLoaderVersion ? null, modPredicate ? (x: [ ]) }:
+          , modLoaderVersion ? null, modPredicate ? (x: [ ]), files ? { } }:
           let
             repo = (import ./repo inputs repoFile);
             minecraftRawMeta = repo.vanilla.${minecraftVersion};
@@ -40,7 +40,7 @@
               "Mod loader ${modLoader} is not implemented yet (make an issue if you want)";
 
           in import ./wrapper inputs {
-            inherit parsedMeta;
+            inherit parsedMeta files;
             versionInfos = { inherit (minecraftRawMeta) id type; };
           };
 

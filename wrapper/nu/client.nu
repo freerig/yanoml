@@ -7,6 +7,8 @@ export def main [
 
   --game-dir: string = "~/.minecraft" # The Minecraft storage directory. It's used to save worlds, config...
 ] {
+  let game_dir = $game_dir | path expand;
+
   let inputs = open $inputs_file
 
   let tmp = mktemp -d
@@ -29,7 +31,7 @@ export def main [
     clientid: "" # Not implemented
     user_type: mojang
 
-    game_directory: ($game_dir | path expand)
+    game_directory: $game_dir
 
     version_name: $inputs.version.id
     version_type: $inputs.version.type
@@ -44,7 +46,13 @@ export def main [
 
   $env.LD_LIBRARY_PATH = $inputs.ldLibPath
 
-  cd (mktemp -d)
+  mkdir $game_dir
+  cd $game_dir
+  $inputs.files | items { |name, dir| ln -s --backup=numbered $dir $name }
 
+  cd (mktemp -d)
   ^$inputs.programs.java ...$arguments.jvm $inputs.mainClass ...$arguments.game 
+
+  cd $game_dir
+  $inputs.files | items { |name, dir| rm $name } | ignore
 }

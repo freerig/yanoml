@@ -17,7 +17,12 @@ def main [
 
   let server_dir = ($server_dir | path expand)
   mkdir $server_dir
+
   cd $server_dir
 
+  $inputs.files | items { |name, dir| ln -s --backup=numbered $dir $name }
+
   ^$inputs.programs.java ...$arguments.jvm $inputs.mainClass ...$arguments.game 
+
+  $inputs.files | items { |name, dir| rm $name } | ignore
 }

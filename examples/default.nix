@@ -12,26 +12,28 @@ let
       modmenu."11.0.3"
       # You can add your own JARs right here! It can be a derivation, a file, or a mod from the function input like above.
     ];
-in {
-  basic = self.mkMinecraft.${system} {
-    minecraftVersion = "1.21.1";
-    repoFile = ./repo.json;
-  };
-  # (You can use the basic.client or basic.server packages)
 
-  fabric = self.mkMinecraft.${system} {
+  basicOptions = {
     minecraftVersion = "1.21.1";
     repoFile = ./repo.json;
+    files.server = {
+      "eula.txt" = inputs.pkgs.writeText "eula.txt" "eula=true";
+    };
+  };
+
+in {
+  basic = self.mkMinecraft.${system} basicOptions;
+  # Then you can use the basic.client or basic.server packages
+
+  fabric = self.mkMinecraft.${system} (basicOptions // {
     modLoader = "fabric";
     modLoaderVersion = "0.17.2";
     inherit modPredicate;
-  };
+  });
 
-  quilt = self.mkMinecraft.${system} {
-    minecraftVersion = "1.21.1";
-    repoFile = ./repo.json;
+  quilt = self.mkMinecraft.${system} (basicOptions // {
     modLoader = "quilt";
     modLoaderVersion = "0.29.1";
     inherit modPredicate;
-  };
+  });
 }
